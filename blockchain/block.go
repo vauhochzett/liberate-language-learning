@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"os"
@@ -14,8 +15,21 @@ import (
 
 /* ----- Request Handlers ----- */
 
+type registerCertStruct struct {
+	PubKey string
+	CertId string
+}
+
 /* Register a new education certificate */
 func registerCert(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var data registerCertStruct
+	err := decoder.Decode(&data)
+	if err != nil {
+		log.Printf("Could not decode %s as JSON for registerCert", r.Body)
+	}
+	log.Println(data)
+
 	log.Println("To Implement!")
 }
 
