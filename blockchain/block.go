@@ -295,8 +295,8 @@ func main() {
 	client.SetOperator(treasuryId, treasuryKey)
 
 	// Create base NFT for all certificate NFTs
-	tokenId := createCertBaseNft()
-	fmt.Println("Created NFT with token ID ", tokenId)
+	certificateBaseNftTokenId = createCertBaseNft()
+	fmt.Println("Created NFT with token ID ", certificateBaseNftTokenId)
 
 	// Serve website
 	port := "8080"
