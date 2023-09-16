@@ -97,6 +97,6 @@ func main() {
 
 	// Serve website
 	port := "8080"
-	fmt.Printf("Serving on localhost:%s", port)
+	fmt.Printf("Serving on http://localhost:%s\n\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
