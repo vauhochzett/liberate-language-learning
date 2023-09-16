@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-
 	"os"
 
 	"log"
@@ -71,31 +70,10 @@ func parseRequestJson(r *http.Request, v any, funcName string) {
 	log.Printf("%s got: %s\n", funcName, v)
 }
 
-func connect() {
-	// Load the .env file and throws an error if it cannot load the variables from that file correctly
-	err := godotenv.Load(".env")
-	if err != nil {
-		panic(fmt.Errorf("Unable to load environment variables from .env file. Error:\n%v\n", err))
-	}
-
-	// Grab testnet account ID and private key from the .env file
-	myAccountId, err := hedera.AccountIDFromString(os.Getenv("HEDERA_ACCOUNT_ID"))
-	if err != nil {
-		panic(err)
-	}
-
-	myPrivateKey, err := hedera.PrivateKeyFromString(os.Getenv("HEDERA_PRIVATE_KEY"))
-	if err != nil {
-		panic(err)
-	}
-
-	// Print your testnet account ID and private key to the console to make sure there was no error
-	fmt.Printf("The account ID is = %v\n", myAccountId)
-	fmt.Printf("The private key is = %v\n", myPrivateKey)
-
+func connect(client *hedera.Client, accountId hedera.AccountID, privateKy hedera.PrivateKey) {
 	// Create your testnet client
-	client := hedera.ClientForTestnet()
-	client.SetOperator(myAccountId, myPrivateKey)
+	client = hedera.ClientForTestnet()
+	client.SetOperator(accountId, privateKy)
 
 	// Set default max transaction fee
 	client.SetDefaultMaxTransactionFee(hedera.HbarFrom(100, hedera.HbarUnits.Hbar))
@@ -107,10 +85,32 @@ func connect() {
 /* ----- Main ----- */
 
 func main() {
+	// Routes
 	http.HandleFunc("/registerCert", registerCert)
 	http.HandleFunc("/retrieveCert", retrieveCert)
 	http.HandleFunc("/checkCert", checkCert)
 	http.HandleFunc("/createKey", createKey)
+
+	// Load the .env file and throw an error if it cannot load the variables from that file correctly
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(fmt.Errorf("Unable to load environment variables from .env file. Error:\n%v\n", err))
+	}
+
+	// Grab testnet account ID and private key from the .env file
+	accountId, err := hedera.AccountIDFromString(os.Getenv("HEDERA_ACCOUNT_ID"))
+	if err != nil {
+		panic(err)
+	}
+
+	privateKey, err := hedera.PrivateKeyFromString(os.Getenv("HEDERA_PRIVATE_KEY"))
+	if err != nil {
+		panic(err)
+	}
+
+	// Print your testnet account ID and private key to the console to make sure there was no error
+	fmt.Printf("The account ID is = %v\n", accountId)
+	fmt.Printf("The private key is = %v\n", privateKey)
 
 	// Serve website
 	port := "8080"
