@@ -4,10 +4,10 @@ import React, { useState } from "react";
 const Vocabulary = ({ word, translation }) => {
   const [correct, setCorrect] = useState(null);
   const [flipped, setFlipped] = useState(false);
-  const [inputValue, setInputValue] = useState(""); // New state for input value
+  const [inputValue, setInputValue] = useState("");
+  const [certificate, setCertificate] = useState(null); // New state for certificate
 
   const handleSubmit = async () => {
-    setCorrect(true);
     setFlipped(true);
 
     const response = await fetch("/verifyWord", {
@@ -22,9 +22,12 @@ const Vocabulary = ({ word, translation }) => {
     });
 
     if (response.ok) {
-      console.log("Word marked as correct.");
+      const data = await response.json(); // Parse the JSON response
+      setCorrect(data?.correct); // Set the 'correct' state based on the response
+      setCertificate(data?.certificate); // Set the 'certificate' state based on the response
     } else {
       console.error("Failed to mark word as correct.");
+      setCorrect(false);
     }
   };
 
@@ -44,12 +47,17 @@ const Vocabulary = ({ word, translation }) => {
           <input
             placeholder="insert translation"
             value={inputValue}
-            onChange={handleInputChange} // Update input value on change
+            onChange={handleInputChange}
           />
-          <button onClick={handleSubmit}>✔️</button>
+          <button onClick={handleSubmit}>Submit Input</button>
         </div>
         <div className="card-back">
           <p>{translation}</p>
+          {correct === true && <span>✅</span>}
+          {correct === false && <span>❌</span>}
+          {certificate && (
+            <a href={`https://ipfs.io/ipfs/${certificate}`}>View Certificate</a>
+          )}
         </div>
       </div>
     </div>
