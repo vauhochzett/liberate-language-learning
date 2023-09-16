@@ -1,6 +1,7 @@
 // Vocabulary.js
 import React, { useState } from "react";
 import Cookies from "js-cookie";
+import "./Vocabulary.css"; // Import the CSS
 
 const Vocabulary = ({ word }) => {
   const [correct, setCorrect] = useState(null);
@@ -58,7 +59,11 @@ const Vocabulary = ({ word }) => {
           {correct === true && <span>✅</span>}
           {correct === false && <span>❌</span>}
           {certificate && (
-            <a href={`https://ipfs.io/ipfs/${certificate}`}>View Certificate</a>
+            <img
+              src={`https://ipfs.io/ipfs/${certificate}`}
+              alt="Vocabulary Book"
+              className="certificate"
+            />
           )}
         </div>
       </div>
