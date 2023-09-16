@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -31,7 +32,11 @@ type registerCertStruct struct {
 /* Register a new education certificate */
 func registerCert(w http.ResponseWriter, r *http.Request) {
 	var data registerCertStruct
-	parseRequestJson(r, &data, "registerCert")
+	err := parseRequestJson(r, &data, "registerCert")
+	if err != nil {
+		http.Error(w, "Unable to parse request body as JSON: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	// Parse user data
 	userId, err := hedera.AccountIDFromString(data.AccId)
@@ -69,7 +74,11 @@ type retrieveCertStruct struct {
 /* Retrieve a user's education certificate(s) */
 func retrieveCert(w http.ResponseWriter, r *http.Request) {
 	var data retrieveCertStruct
-	parseRequestJson(r, &data, "retrieveCert")
+	err := parseRequestJson(r, &data, "retrieveCert")
+	if err != nil {
+		http.Error(w, "Unable to parse request body as JSON: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	log.Println("To Implement!")
 }
@@ -77,7 +86,11 @@ func retrieveCert(w http.ResponseWriter, r *http.Request) {
 /* Check validity of a given education certificate */
 func checkCert(w http.ResponseWriter, r *http.Request) {
 	var data registerCertStruct
-	parseRequestJson(r, &data, "checkCert")
+	err := parseRequestJson(r, &data, "checkCert")
+	if err != nil {
+		http.Error(w, "Unable to parse request body as JSON: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	log.Println("To Implement!")
 }
@@ -89,20 +102,25 @@ type createKeyStruct struct {
 /* Create a private key from a seed phrase */
 func createKey(w http.ResponseWriter, r *http.Request) {
 	var data registerCertStruct
-	parseRequestJson(r, &data, "createKey")
+	err := parseRequestJson(r, &data, "createKey")
+	if err != nil {
+		http.Error(w, "Unable to parse request body as JSON: "+err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	log.Println("To Implement!")
 }
 
 /* ----- Logic ----- */
 
-func parseRequestJson(r *http.Request, v any, funcName string) {
+func parseRequestJson(r *http.Request, v any, funcName string) error {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&v)
 	if err != nil {
-		log.Printf("Could not decode %s as JSON for %s", r.Body, funcName)
+		return errors.New(fmt.Sprintf("Could not decode %s as JSON for %s", r.Body, funcName))
 	}
 	log.Printf("%s got: %s\n", funcName, v)
+	return nil
 }
 
 func createCertBaseNft() hedera.TokenID {
