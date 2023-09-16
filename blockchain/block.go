@@ -28,8 +28,15 @@ func registerCert(w http.ResponseWriter, r *http.Request) {
 	log.Println("To Implement!")
 }
 
+type retrieveCertStruct struct {
+	PubKey string
+}
+
 /* Retrieve a user's education certificate(s) */
 func retrieveCert(w http.ResponseWriter, r *http.Request) {
+	var data retrieveCertStruct
+	parseRequestJson(r, &data, "retrieveCert")
+
 	log.Println("To Implement!")
 }
 
