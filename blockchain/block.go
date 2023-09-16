@@ -17,18 +17,47 @@ import (
 var client hedera.Client
 var treasuryId hedera.AccountID
 var treasuryKey hedera.PrivateKey
+var certificateBaseNftTokenId hedera.TokenID
+var NFT_EnglishDailyB2_CID = []byte("ipfs://bafybeihxnvasdek52refjxoarbltzghbrooma7abpdetcofqjimbrhfpw4")
 
 /* ----- Request Handlers ----- */
 
 type registerCertStruct struct {
-	PubKey string
-	CertId string
+	AccId   string
+	PrivKey string
+	CertId  string
 }
 
 /* Register a new education certificate */
 func registerCert(w http.ResponseWriter, r *http.Request) {
 	var data registerCertStruct
 	parseRequestJson(r, &data, "registerCert")
+
+	// Parse user data
+	userId, err := hedera.AccountIDFromString(data.AccId)
+	if err != nil {
+		http.Error(w, "Unable to parse account ID: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	userKey, err := hedera.PrivateKeyFromString(data.PrivKey)
+	if err != nil {
+		http.Error(w, "Unable to parse private key: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Mint certificate NFT
+	serials := createCertNft(certificateBaseNftTokenId, NFT_EnglishDailyB2_CID)
+	log.Printf("Created certificate of NFT %s with serial(s): %d\n", certificateBaseNftTokenId, serials)
+	if len(serials) != 1 {
+		log.Fatal("Multiple serial numbers received after concrete certificate NFT creation!")
+	}
+	serial := serials[0]
+
+	// Associate and transfer NFT
+	associateStatus := associateCertNft(userId, userKey, certificateBaseNftTokenId)
+	transferStatus := transferCertNft(certificateBaseNftTokenId, serial, userId)
+	log.Println("NFT association with Alice's account:", associateStatus)
+	log.Println("NFT transfer from Treasury to User:", transferStatus)
 
 	log.Println("To Implement!")
 }
