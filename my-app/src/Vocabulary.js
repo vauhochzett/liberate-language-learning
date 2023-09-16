@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Cookies from "js-cookie";
 
-const Vocabulary = ({ word, translation }) => {
+const Vocabulary = ({ word }) => {
   const [correct, setCorrect] = useState(null);
   const [flipped, setFlipped] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -55,7 +55,6 @@ const Vocabulary = ({ word, translation }) => {
           <button onClick={handleSubmit}>Submit Input</button>
         </div>
         <div className="card-back">
-          <p>{translation}</p>
           {correct === true && <span>✅</span>}
           {correct === false && <span>❌</span>}
           {certificate && (

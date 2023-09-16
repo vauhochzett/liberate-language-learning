@@ -1,11 +1,22 @@
-// vocabularies.js
 export const vocabularies = [
-  {
-    word: "React",
-    translation: "A JavaScript library for building user interfaces",
-  },
-  { word: "Component", translation: "Reusable piece of code in React" },
-  { word: "State", translation: "Data that changes over time" },
-  { word: "Schlange", translation: "serpiente" },
-  // Add more vocabularies here
+  { word: "Apple" },
+  { word: "Book" },
+  { word: "Cat" },
+  { word: "Dog" },
+  { word: "Elephant" },
+  { word: "Flower" },
+  { word: "Grapes" },
+  { word: "House" },
+  { word: "Island" },
+  { word: "Juice" },
+  { word: "Kite" },
+  { word: "Lion" },
+  { word: "Mountain" },
+  { word: "Night" },
+  { word: "Ocean" },
+  { word: "Pencil" },
+  { word: "Queen" },
+  { word: "River" },
+  { word: "Sun" },
+  { word: "Tree" },
 ];

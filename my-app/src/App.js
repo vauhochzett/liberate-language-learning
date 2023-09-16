@@ -38,13 +38,7 @@ function App() {
       <h1>Vocabulary App</h1>
       <div className="vocab-list">
         {vocabularies.map((vocab, index) => {
-          return (
-            <Vocabulary
-              key={index}
-              word={vocab.word}
-              translation={vocab.translation}
-            />
-          );
+          return <Vocabulary key={index} word={vocab.word} />;
         })}
       </div>
     </div>
