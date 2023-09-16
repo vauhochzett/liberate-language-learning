@@ -12,6 +12,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
+/* ----- Globals ----- */
+
+var client hedera.Client
+var treasuryId hedera.AccountID
+var treasuryKey hedera.PrivateKey
+
 /* ----- Request Handlers ----- */
 
 type registerCertStruct struct {
@@ -70,9 +76,9 @@ func parseRequestJson(r *http.Request, v any, funcName string) {
 	log.Printf("%s got: %s\n", funcName, v)
 }
 
-func connect(client *hedera.Client, accountId hedera.AccountID, privateKy hedera.PrivateKey) {
+func connect() {
 	// Create your testnet client
-	client.SetOperator(accountId, privateKy)
+	client.SetOperator(treasuryId, treasuryKey)
 
 	// Set default max transaction fee
 	client.SetDefaultMaxTransactionFee(hedera.HbarFrom(100, hedera.HbarUnits.Hbar))
@@ -81,12 +87,12 @@ func connect(client *hedera.Client, accountId hedera.AccountID, privateKy hedera
 	client.SetDefaultMaxQueryPayment(hedera.HbarFrom(50, hedera.HbarUnits.Hbar))
 }
 
-func createCertBaseNft(client *hedera.Client, treasuryAccountId hedera.AccountID, treasuryKey hedera.PrivateKey) hedera.TokenID {
+func createCertBaseNft() hedera.TokenID {
 	// Create the NFT
 	nftCreate := hedera.NewTokenCreateTransaction().
 		SetTokenName("liberatedLanguageLearner_CERT").
 		SetTokenSymbol("LLL CERTIFICATE").
-		SetTreasuryAccountID(treasuryAccountId).
+		SetTreasuryAccountID(treasuryId).
 		SetAdminKey(treasuryKey).
 		SetSupplyKey(treasuryKey).
 		SetTokenType(hedera.TokenTypeNonFungibleUnique).
@@ -96,13 +102,13 @@ func createCertBaseNft(client *hedera.Client, treasuryAccountId hedera.AccountID
 	nftCreateTxSign := nftCreate.Sign(treasuryKey)
 
 	// Submit the transaction to a Hedera network
-	nftCreateSubmit, err := nftCreateTxSign.Execute(client)
+	nftCreateSubmit, err := nftCreateTxSign.Execute(&client)
 	if err != nil {
 		log.Fatal("Unable to create NFT. Error:\n%v\n", err)
 	}
 
 	// Get the transaction receipt
-	nftCreateRx, err := nftCreateSubmit.GetReceipt(client)
+	nftCreateRx, err := nftCreateSubmit.GetReceipt(&client)
 	if err != nil {
 		log.Fatal("Unable to get transaction receipt. Error:\n%v\n", err)
 	}
@@ -127,25 +133,25 @@ func main() {
 	}
 
 	// Grab testnet account ID and private key from the .env file
-	accountId, err := hedera.AccountIDFromString(os.Getenv("HEDERA_ACCOUNT_ID"))
+	treasuryId, err := hedera.AccountIDFromString(os.Getenv("HEDERA_ACCOUNT_ID"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	privateKey, err := hedera.PrivateKeyFromString(os.Getenv("HEDERA_PRIVATE_KEY"))
+	treasuryKey, err := hedera.PrivateKeyFromString(os.Getenv("HEDERA_PRIVATE_KEY"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Print your testnet account ID and private key to the console to make sure there was no error
-	fmt.Printf("The account ID is = %v\n", accountId)
-	fmt.Printf("The private key is = %v\n", privateKey)
+	fmt.Printf("The account ID is = %v\n", treasuryId)
+	fmt.Printf("The private key is = %v\n", treasuryKey)
 
-	clientPtr := hedera.ClientForTestnet()
-	connect(clientPtr, accountId, privateKey)
+	client = *hedera.ClientForTestnet()
+	connect()
 
 	// Create base NFT for all certificate NFTs
-	tokenId := createCertBaseNft(clientPtr, accountId, privateKey)
+	tokenId := createCertBaseNft()
 	fmt.Println("Created NFT with token ID ", tokenId)
 
 	// Serve website
