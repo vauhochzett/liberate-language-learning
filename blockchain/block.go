@@ -142,6 +142,31 @@ func createCertNft(tokenId hedera.TokenID, CID []byte) []int64 {
 	return mintRx.SerialNumbers
 }
 
+func associateCertNft(userAccountId hedera.AccountID, userAccountKey hedera.PrivateKey, tokenId hedera.TokenID) hedera.Status {
+	// Create the associate transaction
+	associateAliceTx := hedera.NewTokenAssociateTransaction().
+		SetAccountID(userAccountId).
+		SetTokenIDs(tokenId)
+
+	//Sign with Alice's key
+	signTx := associateAliceTx.Sign(userAccountKey)
+
+	// Submit the transaction to a Hedera network
+	associateUserTxSubmit, err := signTx.Execute(&client)
+	if err != nil {
+		log.Fatal("Unable to associate certificate to user. Error:\n%v\n", err)
+	}
+
+	// Get the transaction receipt
+	associateUserRx, err := associateUserTxSubmit.GetReceipt(&client)
+	if err != nil {
+		log.Fatal("Unable to get transaction receipt. Error:\n%v\n", err)
+	}
+
+	// Return transaction status
+	return associateUserRx.Status
+}
+
 /* ----- Main ----- */
 
 func main() {
