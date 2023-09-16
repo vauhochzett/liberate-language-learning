@@ -389,13 +389,13 @@ func verifyWordAzure(originalString string, translatedString string, language st
 	}
 
 	// Decode the JSON response
-	var result interface{}
-	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
-		return err
+	var data interface{}
+	err = parseBodyJson(res.Body, &data, "verifyWordAzure")
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unable to parse translation response \"%s\" as JSON: "+err.Error(), res.Body))
 	}
-	// Format and print the response to terminal
-	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
-	fmt.Printf("%s\n", prettyJSON)
+
+	fmt.Printf("SUCCESS\n%s\n", data)
 
 	return nil
 }
