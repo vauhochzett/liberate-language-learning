@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Cookies from "js-cookie";
 import "./Vocabulary.css"; // Import the CSS
 
-const Vocabulary = ({ word }) => {
+const Vocabulary = ({ word, onNext }) => {
   const [correct, setCorrect] = useState(null);
   const [flipped, setFlipped] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -30,6 +30,7 @@ const Vocabulary = ({ word }) => {
       setCorrect(data?.Correct); // Set the 'correct' state based on the response
       setCertificate(data?.Certificate); // Set the 'certificate' state based on the response
       setCorrectWord(data?.CorrectWord); // Set the 'correctWord' state based on the response
+      onNext(); // Move to the next vocabulary word
     } else {
       console.error("Failed to mark word as correct.");
       setCorrect(false);

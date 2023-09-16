@@ -1,10 +1,12 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import "./App.css";
 import { vocabularies } from "./vocabularies";
 import Vocabulary from "./Vocabulary";
 import Cookies from "js-cookie";
 
 function App() {
+  const [currentIndex, setCurrentIndex] = useState(0); // New state for current index
+
   const checkAccountData = useCallback(async () => {
     const accId = Cookies.get("accId");
     const pubKey = Cookies.get("pubKey");
@@ -15,14 +17,13 @@ function App() {
       Cookies.set("pubKey", PubKey);
       console.log(`Private Key: ${PrivKey}`);
     }
-  }, []); // Empty dependency array means this function is memoized and won't change on re-renders
+  }, []);
 
   useEffect(() => {
     checkAccountData();
-  }, [checkAccountData]); // Now checkAccountData is a dependency, but it's memoized so useEffect won't run repeatedly
+  }, [checkAccountData]);
 
   const createKey = async () => {
-    // Call your backend API here
     const response = await fetch("/createKey", {
       method: "POST",
     });
@@ -33,13 +34,22 @@ function App() {
       throw new Error("Failed to create key");
     }
   };
+
+  const handleNextVocab = () => {
+    if (currentIndex < vocabularies.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
   return (
     <div className="App">
       <h1>Vocabulary App</h1>
       <div className="vocab-list">
-        {vocabularies.map((vocab, index) => {
-          return <Vocabulary key={index} word={vocab.word} />;
-        })}
+        <Vocabulary
+          key={currentIndex}
+          word={vocabularies[currentIndex].word}
+          onNext={handleNextVocab} // Pass the handleNextVocab function as a prop
+        />
       </div>
     </div>
   );
