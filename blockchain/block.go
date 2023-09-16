@@ -348,6 +348,10 @@ func transferCertNft(tokenId hedera.TokenID, serial int64, userId hedera.Account
 }
 
 func verifyWordAzure(originalString string, translatedString string, language string) error {
+	if language != "fr" && language != "de" && language != "es" {
+		return errors.New("Unsupported language string " + language)
+	}
+
 	endpoint := "https://api.cognitive.microsofttranslator.com/"
 	uri := endpoint + "translate?api-version=3.0"
 	location := "westeurope"
@@ -356,9 +360,7 @@ func verifyWordAzure(originalString string, translatedString string, language st
 	u, _ := url.Parse(uri)
 	q := u.Query()
 	q.Add("from", "en")
-	q.Add("to", "fr")
-	q.Add("to", "de")
-	q.Add("to", "es")
+	q.Add("to", language)
 	u.RawQuery = q.Encode()
 
 	// Create an anonymous struct for your request body and encode it to JSON
