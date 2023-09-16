@@ -61,7 +61,7 @@ func registerCert(w http.ResponseWriter, r *http.Request) {
 	// Associate and transfer NFT
 	associateStatus := associateCertNft(userId, userKey, certificateBaseNftTokenId)
 	transferStatus := transferCertNft(certificateBaseNftTokenId, serial, userId)
-	log.Println("NFT association with Alice's account:", associateStatus)
+	log.Println("NFT association with User's account:", associateStatus)
 	log.Println("NFT transfer from Treasury to User:", transferStatus)
 
 	if associateStatus != hedera.StatusSuccess || transferStatus != hedera.StatusSuccess {
@@ -272,12 +272,12 @@ func createCertNft(tokenId hedera.TokenID, CID []byte) []int64 {
 
 func associateCertNft(userAccountId hedera.AccountID, userAccountKey hedera.PrivateKey, tokenId hedera.TokenID) hedera.Status {
 	// Create the associate transaction
-	associateAliceTx := hedera.NewTokenAssociateTransaction().
+	associateUserTx := hedera.NewTokenAssociateTransaction().
 		SetAccountID(userAccountId).
 		SetTokenIDs(tokenId)
 
-	//Sign with Alice's key
-	signTx := associateAliceTx.Sign(userAccountKey)
+	//Sign with user's key
+	signTx := associateUserTx.Sign(userAccountKey)
 
 	// Submit the transaction to a Hedera network
 	associateUserTxSubmit, err := signTx.Execute(&client)
