@@ -83,7 +83,7 @@ func retrieveCert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("To Implement!")
+	http.Error(w, "Method not implemented!", http.StatusInternalServerError)
 }
 
 type checkCertStruct struct {
