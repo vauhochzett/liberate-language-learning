@@ -86,16 +86,72 @@ func retrieveCert(w http.ResponseWriter, r *http.Request) {
 	log.Println("To Implement!")
 }
 
+type checkCertStruct struct {
+	AccId  string
+	CertId string
+	Serial string
+}
+
+type responseCheckStruct struct {
+	Valid bool
+}
+
 /* Check validity of a given education certificate */
 func checkCert(w http.ResponseWriter, r *http.Request) {
-	var data registerCertStruct
+	var data checkCertStruct
 	err := parseRequestJson(r, &data, "checkCert")
 	if err != nil {
 		http.Error(w, "Unable to parse request body as JSON: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	log.Println("To Implement!")
+	accId, err := hedera.AccountIDFromString(data.AccId)
+	if data.AccId == "" {
+		http.Error(w, "Unable to parse \""+data.AccId+"\" as Account ID: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	nftIdStr := fmt.Sprintf("%s@%s", data.Serial, data.CertId)
+	nftId, err := hedera.NftIDFromString(nftIdStr)
+	if err != nil {
+		http.Error(w, "Unable to parse \""+data.CertId+"\" as NFT ID: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	nftInfos, err := hedera.NewTokenNftInfoQuery().
+		SetNftID(nftId).
+		Execute(&client)
+
+	if len(nftInfos) > 1 {
+		http.Error(w, fmt.Sprintf("Got more than one NFT info: %s", nftInfos), http.StatusBadRequest)
+		return
+	}
+
+	valid := false
+
+	fmt.Printf("nftInfos: %s\n", nftInfos)
+
+	if len(nftInfos) == 1 {
+		fmt.Printf("accID=%s\nnftInfos[0].AccountID=%s", accId, nftInfos[0].AccountID)
+		valid = accId == nftInfos[0].AccountID
+	}
+
+	// Prepare response
+	w.Header().Set("Content-Type", "application/json")
+	response := responseCheckStruct{
+		Valid: valid,
+	}
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Could not encode check result as JSON: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	not := ""
+	if !valid {
+		not = "not "
+	}
+	log.Printf("Account ID does %sown the given certificate NFT", not)
 }
 
 type responseAccountStruct struct {
