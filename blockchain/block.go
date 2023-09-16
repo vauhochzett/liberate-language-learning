@@ -210,6 +210,7 @@ func createKey(w http.ResponseWriter, r *http.Request) {
 }
 
 type verifyWordStruct struct {
+	AccId            string
 	OriginalString   string
 	TranslatedString string
 	Language         string
@@ -230,11 +231,19 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	accId, err := hedera.AccountIDFromString(data.AccId)
+	if data.AccId == "" {
+		http.Error(w, "Unable to parse \""+data.AccId+"\" as Account ID: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	correct, err := verifyWordAzure(data.OriginalString, data.TranslatedString, data.Language)
 	if err != nil {
 		http.Error(w, "Error on word verification: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Sprintf("AccID: %s", accId)
 	totalCorrect := 5
 	certificate := ""
 
