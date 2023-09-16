@@ -210,6 +210,7 @@ func createKey(w http.ResponseWriter, r *http.Request) {
 type verifyWordStruct struct {
 	OriginalString   string
 	TranslatedString string
+	Language         string
 }
 
 /* Verify the correctness of the word */
@@ -217,8 +218,11 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 	var data verifyWordStruct
 	parseRequestJson(r, &data, "verifyWord")
 
-	log.Println(data.OriginalString)
-	log.Println(data.TranslatedString)
+	if data.OriginalString == "" || data.TranslatedString == "" || data.Language == "" {
+		http.Error(w, "Missing required request parameter. Expecting: OriginalString, TranslatedString, Language", http.StatusBadRequest)
+		return
+	}
+
 	err := verifyWordAzure(data.OriginalString)
 	if err != nil {
 		http.Error(w, "Error on word verification: "+err.Error(), http.StatusInternalServerError)
