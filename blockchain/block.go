@@ -94,18 +94,18 @@ func main() {
 	// Load the .env file and throw an error if it cannot load the variables from that file correctly
 	err := godotenv.Load(".env")
 	if err != nil {
-		panic(fmt.Errorf("Unable to load environment variables from .env file. Error:\n%v\n", err))
+		log.Fatal("Unable to load environment variables from .env file. Error:\n%v\n", err)
 	}
 
 	// Grab testnet account ID and private key from the .env file
 	accountId, err := hedera.AccountIDFromString(os.Getenv("HEDERA_ACCOUNT_ID"))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	privateKey, err := hedera.PrivateKeyFromString(os.Getenv("HEDERA_PRIVATE_KEY"))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	// Print your testnet account ID and private key to the console to make sure there was no error
