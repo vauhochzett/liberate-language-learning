@@ -219,7 +219,11 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(data.OriginalString)
 	log.Println(data.TranslatedString)
-	verifyWordAzure(data.OriginalString)
+	err := verifyWordAzure(data.OriginalString)
+	if err != nil {
+		http.Error(w, "Error on word verification: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 	log.Println("To Implement!")
 }
 
@@ -339,7 +343,7 @@ func transferCertNft(tokenId hedera.TokenID, serial int64, userId hedera.Account
 	return tokenTransferRx.Status
 }
 
-func verifyWordAzure(originalString string) {
+func verifyWordAzure(originalString string) error {
 	endpoint := "https://api.cognitive.microsofttranslator.com/"
 	uri := endpoint + "/translate?api-version=3.0"
 	location := "westeurope"
@@ -364,7 +368,7 @@ func verifyWordAzure(originalString string) {
 	// Build the HTTP POST request
 	req, err := http.NewRequest("POST", u.String(), bytes.NewBuffer(b))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	// Add required headers to the request
 	req.Header.Add("Ocp-Apim-Subscription-Key", translateKey)
@@ -374,17 +378,19 @@ func verifyWordAzure(originalString string) {
 	// Call the Translator API
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// Decode the JSON response
 	var result interface{}
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
-		log.Fatal(err)
+		return err
 	}
 	// Format and print the response to terminal
 	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
 	fmt.Printf("%s\n", prettyJSON)
+
+	return nil
 }
 
 /* ----- Main ----- */
