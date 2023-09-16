@@ -23,7 +23,8 @@ var client hedera.Client
 var treasuryId hedera.AccountID
 var treasuryKey hedera.PrivateKey
 var certificateBaseNftTokenId hedera.TokenID
-var NFT_EnglishDailyB2_CID = []byte("ipfs://bafybeihxnvasdek52refjxoarbltzghbrooma7abpdetcofqjimbrhfpw4")
+var NFT_ONLY_ID = "bafybeihxnvasdek52refjxoarbltzghbrooma7abpdetcofqjimbrhfpw4"
+var NFT_EnglishDailyB2_CID = []byte("ipfs://" + NFT_ONLY_ID)
 var translateKey string
 
 /* ----- Request Handlers ----- */
@@ -214,6 +215,11 @@ type verifyWordStruct struct {
 	Language         string
 }
 
+type responseWordStruct struct {
+	Correct     bool
+	Certificate string
+}
+
 /* Verify the correctness of the word */
 func verifyWord(w http.ResponseWriter, r *http.Request) {
 	var data verifyWordStruct
@@ -229,7 +235,25 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error on word verification: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Printf("Word correct: %s\n", correct)
+	totalCorrect := 5
+	certificate := ""
+
+	if totalCorrect >= 5 {
+		certificate = NFT_ONLY_ID
+	}
+	log.Printf("Word correct: %t\nTotal correct words of user: %d\nCertificate:%s", correct, totalCorrect, certificate)
+
+	// Prepare response
+	w.Header().Set("Content-Type", "application/json")
+	response := responseWordStruct{
+		Correct:     correct,
+		Certificate: certificate,
+	}
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Could not encode check result as JSON: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 /* ----- Logic ----- */
