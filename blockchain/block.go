@@ -42,6 +42,9 @@ func retrieveCert(w http.ResponseWriter, r *http.Request) {
 
 /* Check validity of a given education certificate */
 func checkCert(w http.ResponseWriter, r *http.Request) {
+	var data registerCertStruct
+	parseRequestJson(r, &data, "checkCert")
+
 	log.Println("To Implement!")
 }
 
