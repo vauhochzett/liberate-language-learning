@@ -219,6 +219,7 @@ type verifyWordStruct struct {
 
 type responseWordStruct struct {
 	Correct     bool
+	CorrectWord string
 	Certificate string
 }
 
@@ -239,7 +240,7 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	correct, err := verifyWordAzure(data.OriginalString, data.TranslatedString, data.Language)
+	correct, correctWord, err := verifyWordAzure(data.OriginalString, data.TranslatedString, data.Language)
 	if err != nil {
 		http.Error(w, "Error on word verification: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -259,6 +260,7 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	response := responseWordStruct{
 		Correct:     correct,
+		CorrectWord: correctWord,
 		Certificate: certificate,
 	}
 	err = json.NewEncoder(w).Encode(response)
@@ -393,9 +395,9 @@ type translationResultStruct struct {
 	Translations []translationStruct `json:"translations"`
 }
 
-func verifyWordAzure(originalString string, translatedString string, language string) (bool, error) {
+func verifyWordAzure(originalString string, translatedString string, language string) (bool, string, error) {
 	if language != "fr" && language != "de" && language != "es" {
-		return false, errors.New("Unsupported language string " + language)
+		return false, "", errors.New("Unsupported language string " + language)
 	}
 
 	endpoint := "https://api.cognitive.microsofttranslator.com/"
@@ -420,7 +422,7 @@ func verifyWordAzure(originalString string, translatedString string, language st
 	// Build the HTTP POST request
 	req, err := http.NewRequest("POST", u.String(), bytes.NewBuffer(b))
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 	// Add required headers to the request
 	req.Header.Add("Ocp-Apim-Subscription-Key", translateKey)
@@ -430,23 +432,23 @@ func verifyWordAzure(originalString string, translatedString string, language st
 	// Call the Translator API
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 
 	// Decode the JSON response
 	var data []translationResultStruct
 	err = parseBodyJson(res.Body, &data, "verifyWordAzure")
 	if err != nil {
-		return false, errors.New(fmt.Sprintf("Unable to parse translation response \"%s\" as JSON: "+err.Error(), res.Body))
+		return false, "", errors.New(fmt.Sprintf("Unable to parse translation response \"%s\" as JSON: "+err.Error(), res.Body))
 	}
 
 	if len(data) != 1 || len(data[0].Translations) != 1 {
-		return false, errors.New(fmt.Sprintf("Received more or less than one translation result! See: %s", data))
+		return false, "", errors.New(fmt.Sprintf("Received more or less than one translation result! See: %s", data))
 	}
 
 	translation := data[0].Translations[0]
 	correct := translation.Text == translatedString
-	return correct, nil
+	return correct, translation.Text, nil
 }
 
 /* ----- Main ----- */
