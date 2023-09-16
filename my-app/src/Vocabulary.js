@@ -1,4 +1,3 @@
-// Vocabulary.js
 import React, { useState } from "react";
 import Cookies from "js-cookie";
 import "./Vocabulary.css"; // Import the CSS
@@ -8,6 +7,7 @@ const Vocabulary = ({ word }) => {
   const [flipped, setFlipped] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [certificate, setCertificate] = useState(null); // New state for certificate
+  const [correctWord, setCorrectWord] = useState(null); // New state for corrected word
 
   const handleSubmit = async () => {
     setFlipped(true);
@@ -29,6 +29,7 @@ const Vocabulary = ({ word }) => {
       const data = await response.json(); // Parse the JSON response
       setCorrect(data?.Correct); // Set the 'correct' state based on the response
       setCertificate(data?.Certificate); // Set the 'certificate' state based on the response
+      setCorrectWord(data?.CorrectWord); // Set the 'correctWord' state based on the response
     } else {
       console.error("Failed to mark word as correct.");
       setCorrect(false);
@@ -58,6 +59,7 @@ const Vocabulary = ({ word }) => {
         <div className="card-back">
           {correct === true && <span>✅</span>}
           {correct === false && <span>❌</span>}
+          {correctWord && <p>Correct Word: {correctWord}</p>}{" "}
           {certificate && (
             <img
               src={`https://ipfs.io/ipfs/${certificate}`}
