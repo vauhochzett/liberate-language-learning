@@ -224,12 +224,12 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := verifyWordAzure(data.OriginalString, data.TranslatedString, data.Language)
+	correct, err := verifyWordAzure(data.OriginalString, data.TranslatedString, data.Language)
 	if err != nil {
 		http.Error(w, "Error on word verification: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Println("To Implement!")
+	log.Printf("Word correct: %s\n", correct)
 }
 
 /* ----- Logic ----- */
@@ -357,9 +357,9 @@ type translationResultStruct struct {
 	Translations []translationStruct `json:"translations"`
 }
 
-func verifyWordAzure(originalString string, translatedString string, language string) error {
+func verifyWordAzure(originalString string, translatedString string, language string) (bool, error) {
 	if language != "fr" && language != "de" && language != "es" {
-		return errors.New("Unsupported language string " + language)
+		return false, errors.New("Unsupported language string " + language)
 	}
 
 	endpoint := "https://api.cognitive.microsofttranslator.com/"
@@ -384,7 +384,7 @@ func verifyWordAzure(originalString string, translatedString string, language st
 	// Build the HTTP POST request
 	req, err := http.NewRequest("POST", u.String(), bytes.NewBuffer(b))
 	if err != nil {
-		return err
+		return false, err
 	}
 	// Add required headers to the request
 	req.Header.Add("Ocp-Apim-Subscription-Key", translateKey)
@@ -394,26 +394,23 @@ func verifyWordAzure(originalString string, translatedString string, language st
 	// Call the Translator API
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	// Decode the JSON response
 	var data []translationResultStruct
 	err = parseBodyJson(res.Body, &data, "verifyWordAzure")
 	if err != nil {
-		return errors.New(fmt.Sprintf("Unable to parse translation response \"%s\" as JSON: "+err.Error(), res.Body))
+		return false, errors.New(fmt.Sprintf("Unable to parse translation response \"%s\" as JSON: "+err.Error(), res.Body))
 	}
 
 	if len(data) != 1 || len(data[0].Translations) != 1 {
-		return errors.New(fmt.Sprintf("Received more or less than one translation result! See: %s", data))
+		return false, errors.New(fmt.Sprintf("Received more or less than one translation result! See: %s", data))
 	}
 
 	translation := data[0].Translations[0]
-	if translation.Text == translatedString {
-
-	}
-
-	return nil
+	correct := translation.Text == translatedString
+	return correct, nil
 }
 
 /* ----- Main ----- */
