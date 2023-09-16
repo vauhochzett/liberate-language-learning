@@ -10,12 +10,15 @@ const Vocabulary = ({ word, translation }) => {
     setCorrect(true);
     setFlipped(true);
 
-    const response = await fetch("https://httpbin.org/post", {
+    const response = await fetch("/verifyWord", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ key: inputValue }),
+      body: JSON.stringify({
+        OriginalString: word,
+        TranslatedString: inputValue,
+      }),
     });
 
     if (response.ok) {
