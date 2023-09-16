@@ -346,8 +346,8 @@ func main() {
 	}
 
 	// Print your testnet account ID and private key to the console to make sure there was no error
-	fmt.Printf("The account ID is = %v\n", treasuryId)
-	fmt.Printf("The private key is = %v\n", treasuryKey)
+	log.Printf("The treasury account ID is = %v\n", treasuryId)
+	log.Printf("The treasury private key is = %v\n", treasuryKey)
 
 	// Create testnet client and configure
 	client = *hedera.ClientForTestnet()
@@ -355,10 +355,10 @@ func main() {
 
 	// Create base NFT for all certificate NFTs
 	certificateBaseNftTokenId = createCertBaseNft()
-	fmt.Println("Created NFT with token ID ", certificateBaseNftTokenId)
+	log.Println("Created NFT with token ID ", certificateBaseNftTokenId)
 
 	// Serve website
 	port := "8080"
-	fmt.Printf("Serving on http://localhost:%s\n\n", port)
+	log.Printf("Serving on http://localhost:%s\n\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
