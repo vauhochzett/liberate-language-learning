@@ -348,6 +348,15 @@ func transferCertNft(tokenId hedera.TokenID, serial int64, userId hedera.Account
 	return tokenTransferRx.Status
 }
 
+type translationStruct struct {
+	Text string `json:"text"`
+	To   string `json:"to"`
+}
+
+type translationResultStruct struct {
+	Translations []translationStruct `json:"translations"`
+}
+
 func verifyWordAzure(originalString string, translatedString string, language string) error {
 	if language != "fr" && language != "de" && language != "es" {
 		return errors.New("Unsupported language string " + language)
@@ -389,13 +398,20 @@ func verifyWordAzure(originalString string, translatedString string, language st
 	}
 
 	// Decode the JSON response
-	var data interface{}
+	var data []translationResultStruct
 	err = parseBodyJson(res.Body, &data, "verifyWordAzure")
 	if err != nil {
 		return errors.New(fmt.Sprintf("Unable to parse translation response \"%s\" as JSON: "+err.Error(), res.Body))
 	}
 
-	fmt.Printf("SUCCESS\n%s\n", data)
+	if len(data) != 1 || len(data[0].Translations) != 1 {
+		return errors.New(fmt.Sprintf("Received more or less than one translation result! See: %s", data))
+	}
+
+	translation := data[0].Translations[0]
+	if translation.Text == translatedString {
+
+	}
 
 	return nil
 }
