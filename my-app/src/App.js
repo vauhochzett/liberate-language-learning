@@ -1,28 +1,41 @@
-// App.js
-import React, { useState } from "react";
+import React, { useEffect, useCallback } from "react";
 import "./App.css";
 import { vocabularies } from "./vocabularies";
 import Vocabulary from "./Vocabulary";
+import Cookies from "js-cookie";
 
 function App() {
-  const [myBlockchainkey, setBlockChainkey] = useState("");
+  const checkAccountData = useCallback(async () => {
+    const accId = Cookies.get("accId");
+    const pubKey = Cookies.get("pubKey");
 
-  const requestKey = async () => {
-    const response = await fetch("https://httpbin.org/get");
+    if (!accId || !pubKey) {
+      const { AccId, PubKey, PrivKey } = await createKey();
+      Cookies.set("accId", AccId);
+      Cookies.set("pubKey", PubKey);
+      console.log(`Private Key: ${PrivKey}`);
+    }
+  }, []); // Empty dependency array means this function is memoized and won't change on re-renders
+
+  useEffect(() => {
+    checkAccountData();
+  }, [checkAccountData]); // Now checkAccountData is a dependency, but it's memoized so useEffect won't run repeatedly
+
+  const createKey = async () => {
+    // Call your backend API here
+    const response = await fetch("/createKey", {
+      method: "POST",
+    });
 
     if (response.ok) {
-      setBlockChainkey();
-      console.log("Got the key");
+      return await response.json();
     } else {
-      console.error("Getting key failed");
+      throw new Error("Failed to create key");
     }
   };
   return (
     <div className="App">
       <h1>Vocabulary App</h1>
-      Get key:
-      {myBlockchainkey}
-      <button onClick={requestKey}>Hallo</button>
       <div className="vocab-list">
         {vocabularies.map((vocab, index) => {
           return (
