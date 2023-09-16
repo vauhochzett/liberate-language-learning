@@ -147,6 +147,8 @@ func main() {
 	clientPtr := hedera.ClientForTestnet()
 	connect(clientPtr, accountId, privateKey)
 
+	createCertNft(clientPtr, accountId, privateKey)
+
 	// Serve website
 	port := "8080"
 	fmt.Printf("Serving on http://localhost:%s\n\n", port)
