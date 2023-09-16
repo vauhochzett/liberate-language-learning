@@ -27,54 +27,6 @@ var translateKey string
 
 /* ----- Request Handlers ----- */
 
-func verifyWordAzure(originalString string) {
-	endpoint := "https://api.cognitive.microsofttranslator.com/"
-	uri := endpoint + "/translate?api-version=3.0"
-	location := "westeurope"
-
-	// Build the request URL. See: https://go.dev/pkg/net/url/#example_URL_Parse
-	u, _ := url.Parse(uri)
-	q := u.Query()
-	q.Add("from", "en")
-	q.Add("to", "fr")
-	q.Add("to", "de")
-	q.Add("to", "es")
-	u.RawQuery = q.Encode()
-
-	// Create an anonymous struct for your request body and encode it to JSON
-	body := []struct {
-		Text string
-	}{
-		{Text: originalString},
-	}
-	b, _ := json.Marshal(body)
-
-	// Build the HTTP POST request
-	req, err := http.NewRequest("POST", u.String(), bytes.NewBuffer(b))
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Add required headers to the request
-	req.Header.Add("Ocp-Apim-Subscription-Key", translateKey)
-	req.Header.Add("Ocp-Apim-Subscription-Region", location)
-	req.Header.Add("Content-Type", "application/json")
-
-	// Call the Translator API
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Decode the JSON response
-	var result interface{}
-	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
-		log.Fatal(err)
-	}
-	// Format and print the response to terminal
-	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
-	fmt.Printf("%s\n", prettyJSON)
-}
-
 type registerCertStruct struct {
 	AccId   string
 	PrivKey string
@@ -385,6 +337,54 @@ func transferCertNft(tokenId hedera.TokenID, serial int64, userId hedera.Account
 
 	// Log the transaction status
 	return tokenTransferRx.Status
+}
+
+func verifyWordAzure(originalString string) {
+	endpoint := "https://api.cognitive.microsofttranslator.com/"
+	uri := endpoint + "/translate?api-version=3.0"
+	location := "westeurope"
+
+	// Build the request URL. See: https://go.dev/pkg/net/url/#example_URL_Parse
+	u, _ := url.Parse(uri)
+	q := u.Query()
+	q.Add("from", "en")
+	q.Add("to", "fr")
+	q.Add("to", "de")
+	q.Add("to", "es")
+	u.RawQuery = q.Encode()
+
+	// Create an anonymous struct for your request body and encode it to JSON
+	body := []struct {
+		Text string
+	}{
+		{Text: originalString},
+	}
+	b, _ := json.Marshal(body)
+
+	// Build the HTTP POST request
+	req, err := http.NewRequest("POST", u.String(), bytes.NewBuffer(b))
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Add required headers to the request
+	req.Header.Add("Ocp-Apim-Subscription-Key", translateKey)
+	req.Header.Add("Ocp-Apim-Subscription-Region", location)
+	req.Header.Add("Content-Type", "application/json")
+
+	// Call the Translator API
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Decode the JSON response
+	var result interface{}
+	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		log.Fatal(err)
+	}
+	// Format and print the response to terminal
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	fmt.Printf("%s\n", prettyJSON)
 }
 
 /* ----- Main ----- */
