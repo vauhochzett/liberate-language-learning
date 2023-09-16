@@ -225,12 +225,12 @@ func main() {
 	}
 
 	// Grab testnet account ID and private key from the .env file
-	treasuryId, err := hedera.AccountIDFromString(os.Getenv("HEDERA_ACCOUNT_ID"))
+	treasuryId, err = hedera.AccountIDFromString(os.Getenv("HEDERA_ACCOUNT_ID"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	treasuryKey, err := hedera.PrivateKeyFromString(os.Getenv("HEDERA_PRIVATE_KEY"))
+	treasuryKey, err = hedera.PrivateKeyFromString(os.Getenv("HEDERA_PRIVATE_KEY"))
 	if err != nil {
 		log.Fatal(err)
 	}
