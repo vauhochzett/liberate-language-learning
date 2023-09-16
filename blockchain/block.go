@@ -419,7 +419,7 @@ func main() {
 	// Print your testnet account ID and private key to the console to make sure there was no error
 	log.Printf("The treasury account ID is = %v\n", treasuryId)
 	log.Printf("The treasury private key is = %v\n", treasuryKey)
-	log.Printf("The Azure translate key is = %f\n", translateKey)
+	log.Printf("The Azure translate key is = %s\n", translateKey)
 
 	// Create testnet client and configure
 	client = *hedera.ClientForTestnet()
