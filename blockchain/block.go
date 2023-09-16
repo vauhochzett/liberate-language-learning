@@ -223,7 +223,7 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := verifyWordAzure(data.OriginalString)
+	err := verifyWordAzure(data.OriginalString, data.TranslatedString, data.Language)
 	if err != nil {
 		http.Error(w, "Error on word verification: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -347,7 +347,7 @@ func transferCertNft(tokenId hedera.TokenID, serial int64, userId hedera.Account
 	return tokenTransferRx.Status
 }
 
-func verifyWordAzure(originalString string) error {
+func verifyWordAzure(originalString string, translatedString string, language string) error {
 	endpoint := "https://api.cognitive.microsofttranslator.com/"
 	uri := endpoint + "translate?api-version=3.0"
 	location := "westeurope"
