@@ -61,11 +61,13 @@ const Vocabulary = ({ word }) => {
           {correct === false && <span>❌</span>}
           {correctWord && <p>Correct Word: {correctWord}</p>}{" "}
           {certificate && (
-            <img
-              src={`https://ipfs.io/ipfs/${certificate}`}
-              alt="Vocabulary Book"
-              className="certificate"
-            />
+            <a href={`https://ipfs.io/ipfs/${certificate}`}>
+              <img
+                src={`https://ipfs.io/ipfs/${certificate}`}
+                alt="Vocabulary Book"
+                className="certificate"
+              />
+            </a>
           )}
         </div>
       </div>
