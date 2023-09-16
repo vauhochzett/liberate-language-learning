@@ -81,6 +81,39 @@ func connect(client *hedera.Client, accountId hedera.AccountID, privateKy hedera
 	client.SetDefaultMaxQueryPayment(hedera.HbarFrom(50, hedera.HbarUnits.Hbar))
 }
 
+func createCertNft(client *hedera.Client, treasuryAccountId hedera.AccountID, treasuryKey hedera.PrivateKey) {
+	// Create the NFT
+	nftCreate := hedera.NewTokenCreateTransaction().
+		SetTokenName("liberatedLanguageLearner_CERT").
+		SetTokenSymbol("LLL CERTIFICATE").
+		SetTreasuryAccountID(treasuryAccountId).
+		SetAdminKey(treasuryKey).
+		SetSupplyKey(treasuryKey).
+		SetTokenType(hedera.TokenTypeNonFungibleUnique).
+		SetInitialSupply(0)
+
+	// Sign the transaction with the treasury key
+	nftCreateTxSign := nftCreate.Sign(treasuryKey)
+
+	// Submit the transaction to a Hedera network
+	nftCreateSubmit, err := nftCreateTxSign.Execute(client)
+	if err != nil {
+		log.Fatal("Unable to create NFT. Error:\n%v\n", err)
+	}
+
+	// Get the transaction receipt
+	nftCreateRx, err := nftCreateSubmit.GetReceipt(client)
+	if err != nil {
+		log.Fatal("Unable to get transaction receipt. Error:\n%v\n", err)
+	}
+
+	// Get the token ID
+	tokenId := *nftCreateRx.TokenID
+
+	// Log the token ID
+	fmt.Println("Created NFT with token ID ", tokenId)
+}
+
 /* ----- Main ----- */
 
 func main() {
