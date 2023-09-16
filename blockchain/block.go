@@ -22,13 +22,8 @@ type registerCertStruct struct {
 
 /* Register a new education certificate */
 func registerCert(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
 	var data registerCertStruct
-	err := decoder.Decode(&data)
-	if err != nil {
-		log.Printf("Could not decode %s as JSON for registerCert", r.Body)
-	}
-	log.Println(data)
+	parseRequestJson(r, &data, "registerCert")
 
 	log.Println("To Implement!")
 }
@@ -49,6 +44,15 @@ func createKey(w http.ResponseWriter, r *http.Request) {
 }
 
 /* ----- Logic ----- */
+
+func parseRequestJson(r *http.Request, v any, funcName string) {
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&v)
+	if err != nil {
+		log.Printf("Could not decode %s as JSON for %s", r.Body, funcName)
+	}
+	log.Printf("%s got: %s\n", funcName, v)
+}
 
 func connect() {
 	// Load the .env file and throws an error if it cannot load the variables from that file correctly
