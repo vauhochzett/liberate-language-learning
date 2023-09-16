@@ -105,17 +105,6 @@ func parseRequestJson(r *http.Request, v any, funcName string) {
 	log.Printf("%s got: %s\n", funcName, v)
 }
 
-func connect() {
-	// Create your testnet client
-	client.SetOperator(treasuryId, treasuryKey)
-
-	// Set default max transaction fee
-	client.SetDefaultMaxTransactionFee(hedera.HbarFrom(100, hedera.HbarUnits.Hbar))
-
-	// Set max query payment
-	client.SetDefaultMaxQueryPayment(hedera.HbarFrom(50, hedera.HbarUnits.Hbar))
-}
-
 func createCertBaseNft() hedera.TokenID {
 	// Create the NFT
 	nftCreate := hedera.NewTokenCreateTransaction().
@@ -250,8 +239,9 @@ func main() {
 	fmt.Printf("The account ID is = %v\n", treasuryId)
 	fmt.Printf("The private key is = %v\n", treasuryKey)
 
+	// Create testnet client and configure
 	client = *hedera.ClientForTestnet()
-	connect()
+	client.SetOperator(treasuryId, treasuryKey)
 
 	// Create base NFT for all certificate NFTs
 	tokenId := createCertBaseNft()
