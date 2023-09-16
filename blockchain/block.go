@@ -9,6 +9,9 @@ import (
 	"log"
 	"net/http"
 
+	"bytes"
+	"net/url"
+
 	"github.com/hashgraph/hedera-sdk-go/v2"
 	"github.com/joho/godotenv"
 )
@@ -20,8 +23,57 @@ var treasuryId hedera.AccountID
 var treasuryKey hedera.PrivateKey
 var certificateBaseNftTokenId hedera.TokenID
 var NFT_EnglishDailyB2_CID = []byte("ipfs://bafybeihxnvasdek52refjxoarbltzghbrooma7abpdetcofqjimbrhfpw4")
+var translateKey string
 
 /* ----- Request Handlers ----- */
+
+func verifyWordAzure(originalString string) {
+	endpoint := "https://api.cognitive.microsofttranslator.com/"
+	uri := endpoint + "/translate?api-version=3.0"
+	location := "westeurope"
+
+	// Build the request URL. See: https://go.dev/pkg/net/url/#example_URL_Parse
+	u, _ := url.Parse(uri)
+	q := u.Query()
+	q.Add("from", "en")
+	q.Add("to", "fr")
+	q.Add("to", "de")
+	q.Add("to", "es")
+	u.RawQuery = q.Encode()
+
+	// Create an anonymous struct for your request body and encode it to JSON
+	body := []struct {
+		Text string
+	}{
+		{Text: originalString},
+	}
+	b, _ := json.Marshal(body)
+
+	// Build the HTTP POST request
+	req, err := http.NewRequest("POST", u.String(), bytes.NewBuffer(b))
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Add required headers to the request
+	req.Header.Add("Ocp-Apim-Subscription-Key", translateKey)
+	req.Header.Add("Ocp-Apim-Subscription-Region", location)
+	req.Header.Add("Content-Type", "application/json")
+
+	// Call the Translator API
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Decode the JSON response
+	var result interface{}
+	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		log.Fatal(err)
+	}
+	// Format and print the response to terminal
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	fmt.Printf("%s\n", prettyJSON)
+}
 
 type registerCertStruct struct {
 	AccId   string
@@ -203,6 +255,22 @@ func createKey(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type verifyWordStruct struct {
+	OriginalString   string
+	TranslatedString string
+}
+
+/* Verify the correctness of the word */
+func verifyWord(w http.ResponseWriter, r *http.Request) {
+	var data verifyWordStruct
+	parseRequestJson(r, &data, "verifyWord")
+
+	log.Println(data.OriginalString)
+	log.Println(data.TranslatedString)
+	verifyWordAzure(data.OriginalString)
+	log.Println("To Implement!")
+}
+
 /* ----- Logic ----- */
 
 func parseRequestJson(r *http.Request, v any, funcName string) error {
@@ -327,6 +395,7 @@ func main() {
 	http.HandleFunc("/retrieveCert", retrieveCert)
 	http.HandleFunc("/checkCert", checkCert)
 	http.HandleFunc("/createKey", createKey)
+	http.HandleFunc("/verifyWord", verifyWord)
 
 	// Load the .env file and throw an error if it cannot load the variables from that file correctly
 	err := godotenv.Load(".env")
@@ -345,9 +414,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	translateKey = os.Getenv("AZURE_TRANSLATE_KEY")
+
 	// Print your testnet account ID and private key to the console to make sure there was no error
 	log.Printf("The treasury account ID is = %v\n", treasuryId)
 	log.Printf("The treasury private key is = %v\n", treasuryKey)
+	log.Printf("The Azure translate key is = %f\n", translateKey)
 
 	// Create testnet client and configure
 	client = *hedera.ClientForTestnet()
