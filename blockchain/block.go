@@ -345,7 +345,7 @@ func transferCertNft(tokenId hedera.TokenID, serial int64, userId hedera.Account
 
 func verifyWordAzure(originalString string) error {
 	endpoint := "https://api.cognitive.microsofttranslator.com/"
-	uri := endpoint + "/translate?api-version=3.0"
+	uri := endpoint + "translate?api-version=3.0"
 	location := "westeurope"
 
 	// Build the request URL. See: https://go.dev/pkg/net/url/#example_URL_Parse
