@@ -95,20 +95,53 @@ func checkCert(w http.ResponseWriter, r *http.Request) {
 	log.Println("To Implement!")
 }
 
-type createKeyStruct struct {
-	Passphrase string
+type responseAccountStruct struct {
+	AccId   string
+	PrivKey string
+	PubKey  string
 }
 
 /* Create a private key from a seed phrase */
 func createKey(w http.ResponseWriter, r *http.Request) {
-	var data registerCertStruct
-	err := parseRequestJson(r, &data, "createKey")
+	privateKey, err := hedera.PrivateKeyGenerateEd25519()
 	if err != nil {
-		http.Error(w, "Unable to parse request body as JSON: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Private key could not be created: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	publicKey := privateKey.PublicKey()
+	log.Printf("Created account. \nPUBLIC key: %v\nPRIVATE key: %v\n", publicKey, privateKey)
+
+	// Create new account and assign the public key
+	newAccount, err := hedera.NewAccountCreateTransaction().
+		SetKey(publicKey).
+		SetInitialBalance(hedera.HbarFrom(1000, hedera.HbarUnits.Tinybar)).
+		Execute(&client)
+
+	// Request the receipt of the transaction
+	receipt, err := newAccount.GetReceipt(&client)
+	if err != nil {
+		http.Error(w, "Transaction receipt could not be requested: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	log.Println("To Implement!")
+	// Get the new account ID from the receipt
+	accountId := *receipt.AccountID
+
+	// Log the account ID
+	fmt.Printf("The new account ID is %v\n", accountId)
+
+	// Prepare response
+	w.Header().Set("Content-Type", "application/json")
+	response := responseAccountStruct{
+		AccId:   accountId.String(),
+		PrivKey: privateKey.String(),
+		PubKey:  publicKey.String(),
+	}
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Could not encode new account data as JSON: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 /* ----- Logic ----- */
