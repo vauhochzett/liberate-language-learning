@@ -48,8 +48,15 @@ func checkCert(w http.ResponseWriter, r *http.Request) {
 	log.Println("To Implement!")
 }
 
+type createKeyStruct struct {
+	Passphrase string
+}
+
 /* Create a private key from a seed phrase */
 func createKey(w http.ResponseWriter, r *http.Request) {
+	var data registerCertStruct
+	parseRequestJson(r, &data, "createKey")
+
 	log.Println("To Implement!")
 }
 
