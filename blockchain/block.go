@@ -64,7 +64,10 @@ func registerCert(w http.ResponseWriter, r *http.Request) {
 	log.Println("NFT association with Alice's account:", associateStatus)
 	log.Println("NFT transfer from Treasury to User:", transferStatus)
 
-	log.Println("To Implement!")
+	if associateStatus != hedera.StatusSuccess || transferStatus != hedera.StatusSuccess {
+		http.Error(w, "Did not manage to associate OR transfer NFT", http.StatusInternalServerError)
+		return
+	}
 }
 
 type retrieveCertStruct struct {
