@@ -104,7 +104,7 @@ func createCertBaseNft() hedera.TokenID {
 	// Submit the transaction to a Hedera network
 	nftCreateSubmit, err := nftCreateTxSign.Execute(&client)
 	if err != nil {
-		log.Fatal("Unable to create NFT. Error:\n%v\n", err)
+		log.Fatal("Unable to create base certificate NFT. Error:\n%v\n", err)
 	}
 
 	// Get the transaction receipt
@@ -115,6 +115,31 @@ func createCertBaseNft() hedera.TokenID {
 
 	// Return the token ID
 	return *nftCreateRx.TokenID
+}
+
+func createCertNft(tokenId hedera.TokenID, CID []byte) []int64 {
+
+	// Mint new NFT
+	mintTx := hedera.NewTokenMintTransaction().
+		SetTokenID(tokenId).
+		SetMetadata(CID)
+
+	// Sign the transaction with the supply key
+	mintTxSign := mintTx.Sign(treasuryKey)
+
+	// Submit the transaction to a Hedera network
+	mintTxSubmit, err := mintTxSign.Execute(&client)
+	if err != nil {
+		log.Fatal("Unable to create concrete certificate NFT. Error:\n%v\n", err)
+	}
+
+	// Get the transaction receipt
+	mintRx, err := mintTxSubmit.GetReceipt(&client)
+	if err != nil {
+		log.Fatal("Unable to get transaction receipt. Error:\n%v\n", err)
+	}
+
+	return mintRx.SerialNumbers
 }
 
 /* ----- Main ----- */
