@@ -81,7 +81,7 @@ func connect(client *hedera.Client, accountId hedera.AccountID, privateKy hedera
 	client.SetDefaultMaxQueryPayment(hedera.HbarFrom(50, hedera.HbarUnits.Hbar))
 }
 
-func createCertNft(client *hedera.Client, treasuryAccountId hedera.AccountID, treasuryKey hedera.PrivateKey) {
+func createCertBaseNft(client *hedera.Client, treasuryAccountId hedera.AccountID, treasuryKey hedera.PrivateKey) hedera.TokenID {
 	// Create the NFT
 	nftCreate := hedera.NewTokenCreateTransaction().
 		SetTokenName("liberatedLanguageLearner_CERT").
@@ -107,11 +107,8 @@ func createCertNft(client *hedera.Client, treasuryAccountId hedera.AccountID, tr
 		log.Fatal("Unable to get transaction receipt. Error:\n%v\n", err)
 	}
 
-	// Get the token ID
-	tokenId := *nftCreateRx.TokenID
-
-	// Log the token ID
-	fmt.Println("Created NFT with token ID ", tokenId)
+	// Return the token ID
+	return *nftCreateRx.TokenID
 }
 
 /* ----- Main ----- */
@@ -147,7 +144,9 @@ func main() {
 	clientPtr := hedera.ClientForTestnet()
 	connect(clientPtr, accountId, privateKey)
 
-	createCertNft(clientPtr, accountId, privateKey)
+	// Create base NFT for all certificate NFTs
+	tokenId := createCertBaseNft(clientPtr, accountId, privateKey)
+	fmt.Println("Created NFT with token ID ", tokenId)
 
 	// Serve website
 	port := "8080"
