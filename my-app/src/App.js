@@ -5,7 +5,7 @@ import Vocabulary from "./Vocabulary";
 import Cookies from "js-cookie";
 
 function App() {
-  const [currentIndex, setCurrentIndex] = useState(0); // New state for current index
+  const [currentIndex, setCurrentVocabIndex] = useState(0); // New state for current index
 
   const checkAccountData = useCallback(async () => {
     const accId = Cookies.get("accId");
@@ -35,9 +35,9 @@ function App() {
     }
   };
 
-  const handleNextVocab = () => {
+  const moveToNextVocab = () => {
     if (currentIndex < vocabularies.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      setCurrentVocabIndex(currentIndex + 1); // Move to the next vocab
     }
   };
 
@@ -48,7 +48,7 @@ function App() {
         <Vocabulary
           key={currentIndex}
           word={vocabularies[currentIndex].word}
-          onNext={handleNextVocab} // Pass the handleNextVocab function as a prop
+          onNext={moveToNextVocab} // Pass the handleNextVocab function as a prop
         />
       </div>
     </div>
