@@ -166,13 +166,13 @@ func createCertNft(tokenId hedera.TokenID, CID []byte) []int64 {
 	// Submit the transaction to a Hedera network
 	mintTxSubmit, err := mintTxSign.Execute(&client)
 	if err != nil {
-		log.Fatal("Unable to create concrete certificate NFT. Error:\n%v\n", err)
+		log.Fatal("[createCertNft] Unable to create concrete certificate NFT. Error:\n%v\n", err)
 	}
 
 	// Get the transaction receipt
 	mintRx, err := mintTxSubmit.GetReceipt(&client)
 	if err != nil {
-		log.Fatal("Unable to get transaction receipt. Error:\n%v\n", err)
+		log.Fatal("[createCertNft] Unable to get transaction receipt. Error:\n%v\n", err)
 	}
 
 	return mintRx.SerialNumbers
@@ -190,13 +190,13 @@ func associateCertNft(userAccountId hedera.AccountID, userAccountKey hedera.Priv
 	// Submit the transaction to a Hedera network
 	associateUserTxSubmit, err := signTx.Execute(&client)
 	if err != nil {
-		log.Fatal("Unable to associate certificate to user. Error:\n%v\n", err)
+		log.Fatal("[associateCertNft] Unable to associate certificate to user. Error:\n%v\n", err)
 	}
 
 	// Get the transaction receipt
 	associateUserRx, err := associateUserTxSubmit.GetReceipt(&client)
 	if err != nil {
-		log.Fatal("Unable to get transaction receipt. Error:\n%v\n", err)
+		log.Fatal("[associateCertNft] Unable to get transaction receipt. Error:\n%v\n", err)
 	}
 
 	// Return transaction status
@@ -214,13 +214,13 @@ func transferCertNft(tokenId hedera.TokenID, serial int64, userId hedera.Account
 	// Submit the transaction
 	tokenTransferSubmit, err := signTransferTx.Execute(&client)
 	if err != nil {
-		log.Fatal("Unable to submit transaction. Error:\n%v\n", err)
+		log.Fatal("[transferCertNft] Unable to submit transaction. Error:\n%v\n", err)
 	}
 
 	//Get the transaction receipt
 	tokenTransferRx, err := tokenTransferSubmit.GetReceipt(&client)
 	if err != nil {
-		log.Fatal("Unable to get transaction receipt. Error:\n%v\n", err)
+		log.Fatal("[transferCertNft] Unable to get transaction receipt. Error:\n%v\n", err)
 	}
 
 	// Log the transaction status
