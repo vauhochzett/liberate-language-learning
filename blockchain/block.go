@@ -3,9 +3,16 @@ package main
 import (
 	"fmt"
 
+	"os"
+
 	"log"
 	"net/http"
+
+	"github.com/hashgraph/hedera-sdk-go/v2"
+	"github.com/joho/godotenv"
 )
+
+/* ----- Request Handlers ----- */
 
 /* Register a new education certificate */
 func registerCert(w http.ResponseWriter, r *http.Request) {
@@ -26,6 +33,43 @@ func checkCert(w http.ResponseWriter, r *http.Request) {
 func createKey(w http.ResponseWriter, r *http.Request) {
 	log.Println("To Implement!")
 }
+
+/* ----- Logic ----- */
+
+func connect() {
+	// Load the .env file and throws an error if it cannot load the variables from that file correctly
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(fmt.Errorf("Unable to load environment variables from .env file. Error:\n%v\n", err))
+	}
+
+	// Grab testnet account ID and private key from the .env file
+	myAccountId, err := hedera.AccountIDFromString(os.Getenv("HEDERA_ACCOUNT_ID"))
+	if err != nil {
+		panic(err)
+	}
+
+	myPrivateKey, err := hedera.PrivateKeyFromString(os.Getenv("HEDERA_PRIVATE_KEY"))
+	if err != nil {
+		panic(err)
+	}
+
+	// Print your testnet account ID and private key to the console to make sure there was no error
+	fmt.Printf("The account ID is = %v\n", myAccountId)
+	fmt.Printf("The private key is = %v\n", myPrivateKey)
+
+	// Create your testnet client
+	client := hedera.ClientForTestnet()
+	client.SetOperator(myAccountId, myPrivateKey)
+
+	// Set default max transaction fee
+	client.SetDefaultMaxTransactionFee(hedera.HbarFrom(100, hedera.HbarUnits.Hbar))
+
+	// Set max query payment
+	client.SetDefaultMaxQueryPayment(hedera.HbarFrom(50, hedera.HbarUnits.Hbar))
+}
+
+/* ----- Main ----- */
 
 func main() {
 	http.HandleFunc("/registerCert", registerCert)
