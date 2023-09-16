@@ -167,6 +167,30 @@ func associateCertNft(userAccountId hedera.AccountID, userAccountKey hedera.Priv
 	return associateUserRx.Status
 }
 
+func transferCertNft(tokenId hedera.TokenID, serial int64, userId hedera.AccountID) hedera.Status {
+	// Transfer the NFT from treasury to user
+	tokenTransferTx := hedera.NewTransferTransaction().
+		AddNftTransfer(hedera.NftID{TokenID: tokenId, SerialNumber: serial}, treasuryId, userId)
+
+	// Sign with the treasury key to authorize the transfer
+	signTransferTx := tokenTransferTx.Sign(treasuryKey)
+
+	// Submit the transaction
+	tokenTransferSubmit, err := signTransferTx.Execute(&client)
+	if err != nil {
+		log.Fatal("Unable to submit transaction. Error:\n%v\n", err)
+	}
+
+	//Get the transaction receipt
+	tokenTransferRx, err := tokenTransferSubmit.GetReceipt(&client)
+	if err != nil {
+		log.Fatal("Unable to get transaction receipt. Error:\n%v\n", err)
+	}
+
+	// Log the transaction status
+	return tokenTransferRx.Status
+}
+
 /* ----- Main ----- */
 
 func main() {
