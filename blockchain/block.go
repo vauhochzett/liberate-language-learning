@@ -26,6 +26,7 @@ var certificateBaseNftTokenId hedera.TokenID
 var NFT_ONLY_ID = "bafybeihxnvasdek52refjxoarbltzghbrooma7abpdetcofqjimbrhfpw4"
 var NFT_EnglishDailyB2_CID = []byte("ipfs://" + NFT_ONLY_ID)
 var translateKey string
+var progressCounter = make(map[string]int)
 
 /* ----- Request Handlers ----- */
 
@@ -231,7 +232,8 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accId, err := hedera.AccountIDFromString(data.AccId)
+	// Parse only to check if a correct account ID was sent
+	_, err := hedera.AccountIDFromString(data.AccId)
 	if data.AccId == "" {
 		http.Error(w, "Unable to parse \""+data.AccId+"\" as Account ID: "+err.Error(), http.StatusBadRequest)
 		return
@@ -243,14 +245,15 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Sprintf("AccID: %s", accId)
-	totalCorrect := 5
-	certificate := ""
+	if correct {
+		progressCounter[data.AccId] += 1
+	}
 
-	if totalCorrect >= 5 {
+	certificate := ""
+	if progressCounter[data.AccId] >= 5 {
 		certificate = NFT_ONLY_ID
 	}
-	log.Printf("Word correct: %t\nTotal correct words of user: %d\nCertificate:%s", correct, totalCorrect, certificate)
+	log.Printf("Word correct: %t\nTotal correct words of user: %d\nCertificate:%s", correct, progressCounter[data.AccId], certificate)
 
 	// Prepare response
 	w.Header().Set("Content-Type", "application/json")
