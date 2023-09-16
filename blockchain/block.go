@@ -72,7 +72,6 @@ func parseRequestJson(r *http.Request, v any, funcName string) {
 
 func connect(client *hedera.Client, accountId hedera.AccountID, privateKy hedera.PrivateKey) {
 	// Create your testnet client
-	client = hedera.ClientForTestnet()
 	client.SetOperator(accountId, privateKy)
 
 	// Set default max transaction fee
@@ -111,6 +110,9 @@ func main() {
 	// Print your testnet account ID and private key to the console to make sure there was no error
 	fmt.Printf("The account ID is = %v\n", accountId)
 	fmt.Printf("The private key is = %v\n", privateKey)
+
+	clientPtr := hedera.ClientForTestnet()
+	connect(clientPtr, accountId, privateKey)
 
 	// Serve website
 	port := "8080"
