@@ -41,12 +41,12 @@ func registerCert(w http.ResponseWriter, r *http.Request) {
 	// Parse user data
 	userId, err := hedera.AccountIDFromString(data.AccId)
 	if err != nil {
-		http.Error(w, "Unable to parse account ID: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Unable to parse account ID: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	userKey, err := hedera.PrivateKeyFromString(data.PrivKey)
 	if err != nil {
-		http.Error(w, "Unable to parse private key: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Unable to parse private key: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
