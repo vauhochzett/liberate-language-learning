@@ -2,6 +2,17 @@
   text-align: center;
 }
 
+
+body {
+  height: 100vh; /* 100% of the viewport height */
+  background-image: linear-gradient(to bottom,#659999, #f4791f);
+}
+
+
+* {
+  font-family: 'Playfair Display', serif;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

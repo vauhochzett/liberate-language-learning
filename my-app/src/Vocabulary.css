@@ -4,6 +4,7 @@
   border: 1px solid #ccc;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color:#f9f9f9;
 }
 
 .card {
@@ -24,11 +25,12 @@ h2 {
 }
 
 input {
+  margin-top:30px;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 button {
@@ -47,10 +49,12 @@ button:hover {
 
 .correct {
   border-color: green;
+  border-width: 2px;
 }
 
 .wrong {
   border-color: red;
+  border-width: 2px;
 }
 
 .flipped {

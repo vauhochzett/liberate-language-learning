@@ -78,7 +78,10 @@ const Vocabulary = ({ word, onNext }) => {
           {certificate && (
             <div>
               <h2>Congratulations!</h2>
-              <p>You just earned the <i>English: Daily Conversation</i> certificate!</p>
+              <p>
+                You just earned the <i>English: Daily Conversation</i>{" "}
+                certificate!
+              </p>
               <p>Your NFT was minted and is available via IPFS:</p>
               <a href={`https://ipfs.io/ipfs/${certificate}`}>
                 <img
@@ -90,6 +93,9 @@ const Vocabulary = ({ word, onNext }) => {
             </div>
           )}
         </div>
+        <p>
+          Track your learning progress via micro-certificates on the blockchain.
+        </p>
       </div>
     </div>
   );
