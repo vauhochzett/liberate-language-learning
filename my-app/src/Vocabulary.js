@@ -96,9 +96,6 @@ const Vocabulary = ({ word, onNext }) => {
             </div>
           )}
         </div>
-        <p>
-          Track your learning progress via micro-certificates on the blockchain.
-        </p>
       </div>
     </div>
   );

@@ -51,6 +51,9 @@ function Main() {
       <Row>
         <Col>
           <h1>Chain the Gain!</h1>
+          <p>
+            Track your learning progress via micro-certificates on the blockchain.
+          </p>
         </Col>
       </Row>
       <Row>
@@ -65,6 +68,11 @@ function Main() {
           </Card>
         </Col>
         <Col></Col>
+      </Row>
+      <Row>
+        <Col>
+          <p><i>Connected to Hedera Hashgraph Testnet ✔</i></p>
+        </Col>
       </Row>
     </Container>
   );
