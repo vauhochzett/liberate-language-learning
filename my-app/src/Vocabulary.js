@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import Cookies from "js-cookie";
+import React, { useState } from "react";
 import "./Vocabulary.css"; // Import the CSS
 
 const Vocabulary = ({ word, onNext }) => {
@@ -76,13 +76,18 @@ const Vocabulary = ({ word, onNext }) => {
           {correct === false && <span>❌</span>}
           {correctWord && <p>Correct Word: {correctWord}</p>}{" "}
           {certificate && (
-            <a href={`https://ipfs.io/ipfs/${certificate}`}>
-              <img
-                src={`https://ipfs.io/ipfs/${certificate}`}
-                alt="Vocabulary Book"
-                className="certificate"
-              />
-            </a>
+            <div>
+              <h2>Congratulations!</h2>
+              <p>You just earned the <i>English: Daily Conversation</i> certificate!</p>
+              <p>Your NFT was minted and is available via IPFS:</p>
+              <a href={`https://ipfs.io/ipfs/${certificate}`}>
+                <img
+                  src={`https://ipfs.io/ipfs/${certificate}`}
+                  alt="Vocabulary Book"
+                  className="certificate"
+                />
+              </a>
+            </div>
           )}
         </div>
       </div>
