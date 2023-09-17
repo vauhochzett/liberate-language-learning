@@ -2,7 +2,7 @@
 
 Language learning is online. But to get a certificate, you need institutions. Let's liberate language certificates with blockchain! Study with our app and get microcertificates – minted as NFT!
 
-![chain-the-gain-logo](https://github.com/vauhochzett/liberate-language-learning/assets/5780401/d0e7b601-08b6-472d-9f95-7bd32b0981be)
+<img src="https://github.com/vauhochzett/liberate-language-learning/assets/5780401/d0e7b601-08b6-472d-9f95-7bd32b0981be" alt="Logo" width="250"/>
 
 ## Inspiration
 
