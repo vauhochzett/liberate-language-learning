@@ -20,7 +20,7 @@ function Main() {
       const { AccId, PubKey, PrivKey } = await createKey();
       Cookies.set("accId", AccId);
       Cookies.set("pubKey", PubKey);
-      console.log(`Private Key: ${PrivKey}`);
+      Cookies.set("privKey", PrivKey);
     }
   }, []);
 

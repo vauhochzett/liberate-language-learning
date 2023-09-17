@@ -35,6 +35,22 @@ const Vocabulary = ({ word, onNext }) => {
         setCorrect(data?.Correct); // Set the 'correct' state based on the response
         setCertificate(data?.Certificate); // Set the 'certificate' state based on the response
         setCorrectWord(data?.CorrectWord);
+
+        if (data?.Certificate) {
+          const response = await fetch("/registerCert", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              AccId: Cookies.get("accId"),
+              PrivKey: Cookies.get("privKey"),
+              CertId: "",
+            }),
+          });
+
+          console.log(`response was ok: ${response.ok}`)
+        }
       } else {
         console.error("Failed to mark word as correct.");
         setCorrect(false);
