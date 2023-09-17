@@ -1,8 +1,13 @@
-import React, { useEffect, useCallback, useState } from "react";
-import "./App.css";
-import { vocabularies } from "./vocabularies";
-import Vocabulary from "./Vocabulary";
 import Cookies from "js-cookie";
+import React, { useCallback, useEffect, useState } from "react";
+import "./App.css";
+import Vocabulary from "./Vocabulary";
+import { vocabularies } from "./vocabularies";
+
+import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
+import Container from "react-bootstrap/Container";
+import Row from 'react-bootstrap/Row';
 
 function App() {
   const [currentIndex, setCurrentVocabIndex] = useState(0); // New state for current index
@@ -42,16 +47,26 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>Vocabulary App</h1>
-      <div className="vocab-list">
-        <Vocabulary
-          key={currentIndex}
-          word={vocabularies[currentIndex].word}
-          onNext={moveToNextVocab} // Pass the handleNextVocab function as a prop
-        />
-      </div>
-    </div>
+    <Container className="App">
+      <Row>
+        <Col>
+          <h1>Chain the Gain!</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col></Col>
+        <Col xs={12} md={8}>
+          <Card className="vocab-list">
+            <Vocabulary
+              key={currentIndex}
+              word={vocabularies[currentIndex].word}
+              onNext={moveToNextVocab} // Pass the handleNextVocab function as a prop
+            />
+          </Card>
+        </Col>
+        <Col></Col>
+      </Row>
+    </Container>
   );
 }
 
