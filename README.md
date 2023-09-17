@@ -2,6 +2,8 @@
 
 Language learning is online. But to get a certificate, you need institutions. Let's liberate language certificates with blockchain! Study with our app and get microcertificates – minted as NFT!
 
+![chain-the-gain-logo](https://github.com/vauhochzett/liberate-language-learning/assets/5780401/d0e7b601-08b6-472d-9f95-7bd32b0981be)
+
 ## Inspiration
 
 Language learning has become more digital and is inherently decentralized – people use all kinds of apps for it. But to get an official certificate, we still need to go to an institution, pay a lump sum, and then hope that we pass. Shouldn't this work better? Can blockchain liberate language certificates?
