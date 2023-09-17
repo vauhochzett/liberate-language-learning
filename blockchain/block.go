@@ -251,7 +251,7 @@ func verifyWord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	certificate := ""
-	if progressCounter[data.AccId] >= 5 {
+	if progressCounter[data.AccId] > 0 && progressCounter[data.AccId]%5 == 0 {
 		certificate = NFT_ONLY_ID
 	}
 	log.Printf("Word correct: %t\nTotal correct words of user: %d\nCertificate:%s", correct, progressCounter[data.AccId], certificate)

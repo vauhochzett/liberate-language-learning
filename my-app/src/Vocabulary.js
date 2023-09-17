@@ -2,6 +2,8 @@ import Cookies from "js-cookie";
 import React, { useState } from "react";
 import "./Vocabulary.css"; // Import the CSS
 
+import ConfettiExplosion from 'react-confetti-explosion';
+
 const Vocabulary = ({ word, onNext }) => {
   const [correct, setCorrect] = useState(null);
   const [flipped, setFlipped] = useState(false);
@@ -59,6 +61,7 @@ const Vocabulary = ({ word, onNext }) => {
         correct !== null ? (correct ? "correct" : "wrong") : ""
       } ${flipped ? "flipped" : ""}`}
     >
+      {certificate && <ConfettiExplosion />}
       <div className="card">
         <div className="card-front">
           <h2>{word}</h2>
